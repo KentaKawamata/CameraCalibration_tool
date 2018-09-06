@@ -39,17 +39,16 @@ def draw_corner(img, corners_sub, ret):
     cv2.waitKey(500)
 
 def re_draw_corner(name, corners_sub, re_points, ret):
-    print(re_points)
     # Draw and display the corners
-    print(name)
     img = cv2.imread(name, 1)
-    for i, point  in enumerate(re_points):
-        print(point[0])
-        cv2.circle(img, (int(point[0][0]),int(point[0][1])), 2, (0, 0, 255), -1)
-    #img = cv2.drawChessboardCorners(img, (7,6), re_points, ret)
+    for i, re_point  in enumerate(re_points):
+        point = corners_sub[i]
+        cv2.circle(img, (int(point[0][0]),int(point[0][1])), 4, (0, 255, 0), -1)
+        cv2.circle(img, (int(re_point[0][0]),int(re_point[0][1])), 4, (0, 0, 255), -1)
     
     cv2.imshow('img',img)
     cv2.waitKey()
+    cv2.destroyAllWindows()
 
 def calibrate_images():
 
