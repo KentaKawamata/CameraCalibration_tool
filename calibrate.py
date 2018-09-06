@@ -39,11 +39,14 @@ def draw_corner(img, corners_sub, ret):
     cv2.waitKey(500)
 
 def re_draw_corner(name, corners_sub, re_points, ret):
+    print(re_points)
     # Draw and display the corners
+    print(name)
     img = cv2.imread(name, 1)
-
-    img = cv2.drawChessboardCorners(img, (7,6), corners_sub, ret)
-    img = cv2.drawChessboardCorners(img, (7,6), re_points, ret)
+    for i, point  in enumerate(re_points):
+        print(point[0])
+        cv2.circle(img, (int(point[0][0]),int(point[0][1])), 2, (0, 0, 255), -1)
+    #img = cv2.drawChessboardCorners(img, (7,6), re_points, ret)
     
     cv2.imshow('img',img)
     cv2.waitKey()
@@ -91,7 +94,6 @@ def calibrate_images():
 
     ret, in_para, dist, R, t = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
     
-    print(corners_sub)
 
     print("Internal parameters = ")
     print(in_para)
@@ -106,6 +108,7 @@ def calibrate_images():
         error = cv2.norm(imgpoints[i], re_points, cv2.NORM_L2) / len(re_points)
         re_draw_corner(img_name[i], imgpoints[i], re_points, 1)
         mean_error += error
+        print(re_points)
 
     # 0に近い値が望ましい(魚眼レンズの評価には不適？)
     print("total error: ", mean_error/len(objpoints))
