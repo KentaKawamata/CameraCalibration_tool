@@ -98,6 +98,12 @@ def calibrate_images():
     print(in_para)
     print("distotion parameters = ")
     print(dist)
+    #print("R = ", R)
+    print("t = ", t)
+
+    #R = np.ndarray(R)
+    rote, _ = cv2.Rodrigues(R[0])
+    print("rote = ", rote)
 
     # 再投影誤差による評価
     mean_error = 0
@@ -107,7 +113,6 @@ def calibrate_images():
         error = cv2.norm(imgpoints[i], re_points, cv2.NORM_L2) / len(re_points)
         re_draw_corner(img_name[i], imgpoints[i], re_points, 1)
         mean_error += error
-        print(re_points)
 
     # 0に近い値が望ましい(魚眼レンズの評価には不適？)
     print("total error: ", mean_error/len(objpoints))
