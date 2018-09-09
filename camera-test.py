@@ -49,7 +49,7 @@ class Capture():
     cv2.destroyAllWindows()
 
   def capture(self):
-    self.manual_focus()
+    #self.manual_focus()
     self.capture_camera()
 
 def main():

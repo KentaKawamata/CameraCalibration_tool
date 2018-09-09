@@ -93,15 +93,11 @@ def calibrate_images():
 
     ret, in_para, dist, R, t = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
     
+    
+    np.savetxt("in_param.csv", in_para, delimiter = ',', fmt="%0.14f")
+    np.savetxt("dist.csv", dist, delimiter = ',', fmt="%0.14f")
 
-    print("Internal parameters = ")
-    print(in_para)
-    print("distotion parameters = ")
-    print(dist)
-    #print("R = ", R)
     print("t = ", t)
-
-    #R = np.ndarray(R)
     rote, _ = cv2.Rodrigues(R[0])
     print("rote = ", rote)
 
@@ -117,8 +113,6 @@ def calibrate_images():
     # 0に近い値が望ましい(魚眼レンズの評価には不適？)
     print("total error: ", mean_error/len(objpoints))
  
-    #cv2.imwrite('calibresult.png', dst)
-    
 def main():
 
     calibrate_images()
