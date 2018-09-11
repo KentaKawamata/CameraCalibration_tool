@@ -11,11 +11,9 @@ board = aruco.GridBoard_create(2, 1, 150, 450, dictionary)
 
 def send_XYZ(rote, t, corners, ids):
 
-    #rote = np.array(rote) / 180 * np.pi
     rote = np.array(rote)
     R, _ = cv2.Rodrigues(rote)
-    #print("rote = ", rote)
-    print("R = ", R)
+    #print("R = ", R)
 
     x = []
     y = []
@@ -23,21 +21,13 @@ def send_XYZ(rote, t, corners, ids):
         if ids[i] == 0 or ids[i] == 2:
             x.append(corners[i][0][0][0])
             y_point = 480 - corners[i][0][0][1]
-            #y.append(corners[i][0][0][1])
             y.append(y_point)
 
-    #print("corners = \n", corners)
-    print("x = ", x)
-    print("y = ", y)
     rx = [0, 0]
     ry = [0, 0]
     for i in range(len(x)):
         rx[i], ry[i] = calc(x[i], y[i], R, t)
-        #rx[i] = math.fabs(rx[i])
-        #ry[i] = math.fabs(ry[i])
 
-    #print("rx = ", rx)
-    #print("ry = ", ry)
     strenge_x = (rx[0] - rx[1])**2
     strenge_y = (ry[0] - ry[1])**2
     length = math.sqrt(strenge_x + strenge_y)
@@ -76,6 +66,7 @@ def calc(x, y, R, t):
     y0 = t[1]
     z0 = t[2]
     
+    #内部パラメータで座標を正規化
     x = x / in_param[0][0]
     y = y / in_param[1][1]
 
@@ -109,9 +100,6 @@ def arReader():
     while True:
         ret, frame = cap.read()
         img = cv2.resize(frame, (640, 480))
-
-        #corners, ids, rejectedImgPoints = aruco.detectMarkers(img, dictionary) #マーカを検出
-        #aruco.drawDetectedMarkers(img, corners, ids, (0,255,0))
         cv2.imshow('drawDetectedMarkers', img)
         
         if cv2.waitKey(100) == 0x20:
