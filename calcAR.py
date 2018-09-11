@@ -11,7 +11,7 @@ board = aruco.GridBoard_create(2, 1, 150, 450, dictionary)
 
 def send_XYZ(rote, t, corners, ids):
 
-    rote = np.array(rote)/180
+    rote = np.array(rote) / 180 * np.pi
     #R = []
     #for r in rote:
     #    ro, _ = cv2.Rodrigues(r)
@@ -33,8 +33,8 @@ def send_XYZ(rote, t, corners, ids):
     ry = [0, 0]
     for i in range(len(x)):
         rx[i], ry[i] = calc(x[i], y[i], R, t)
-        rx[i] = math.fabs(rx[i])
-        ry[i] = math.fabs(ry[i])
+        #rx[i] = math.fabs(rx[i])
+        #ry[i] = math.fabs(ry[i])
 
     #print("rx = ", rx)
     #print("ry = ", ry)
@@ -56,7 +56,6 @@ def estimate_Pose(img):
     #retval, R, t = aruco.estimatePoseBoard(corners, ids, board, in_param, dist)
     
     for i in range(len(ids)):
-        print("R = ", R[i])
         aruco.drawAxis(img, in_param, dist, R[i], t[i], 150.0)
         cv2.circle(img, (int(corners[0][0][0][0]),int(corners[0][0][0][1])), 4, (255, 0, 0), -1)
         cv2.circle(img, (int(corners[1][0][0][0]),int(corners[1][0][0][1])), 4, (255, 0, 0), -1)
@@ -75,9 +74,6 @@ def calc(x, y, R, t):
     x0 = t[0]
     y0 = t[1]
     z0 = t[2]
-    #x0 = t[0][0]
-    #y0 = t[0][1]
-    #z0 = t[0][2]
     
     vec = [0, 0, 0]
     vec[0] = R[0][0] + R[0][1]*x + R[0][2]*y
@@ -87,7 +83,7 @@ def calc(x, y, R, t):
 
     if vec[2]<0:
         x = -vec[0] / vec[2] * z0 + x0
-        y = -vec[1] / vec[2] * z0 - y0
+        y = vec[1] / vec[2] * z0 - y0
         length = float(math.sqrt(x*x + y*y))
         theta = float(math.atan2(y, x))
         rx = float(length * math.cos(theta))
@@ -107,20 +103,16 @@ def arReader():
     cap = cv2.VideoCapture(0)
 
     while True:
-
         ret, frame = cap.read()
         img = cv2.resize(frame, (640, 480))
 
         #corners, ids, rejectedImgPoints = aruco.detectMarkers(img, dictionary) #マーカを検出
-        #print(corners)
-
         #aruco.drawDetectedMarkers(img, corners, ids, (0,255,0))
         cv2.imshow('drawDetectedMarkers', img)
         
         if cv2.waitKey(100) == 0x20:
            estimate_Pose(img)
-
-        if cv2.waitKey(100) == 27:
+        elif cv2.waitKey(100) == 27:
             break
 
     cap.release()
