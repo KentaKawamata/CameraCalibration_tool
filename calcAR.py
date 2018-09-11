@@ -11,24 +11,24 @@ board = aruco.GridBoard_create(2, 1, 150, 450, dictionary)
 
 def send_XYZ(rote, t, corners, ids):
 
-    rote = np.array(rote) / 180 * np.pi
-    #R = []
-    #for r in rote:
-    #    ro, _ = cv2.Rodrigues(r)
-    #    R.append(ro)
+    #rote = np.array(rote) / 180 * np.pi
+    rote = np.array(rote)
     R, _ = cv2.Rodrigues(rote)
-    #print("R = ", R)
+    #print("rote = ", rote)
+    print("R = ", R)
 
     x = []
     y = []
     for i in range(len(ids)):
         if ids[i] == 0 or ids[i] == 2:
             x.append(corners[i][0][0][0])
-            y.append(corners[i][0][0][1])
+            y_point = 480 - corners[i][0][0][1]
+            #y.append(corners[i][0][0][1])
+            y.append(y_point)
 
     #print("corners = \n", corners)
-    #print("x = ", x)
-    #print("y = ", y)
+    print("x = ", x)
+    print("y = ", y)
     rx = [0, 0]
     ry = [0, 0]
     for i in range(len(x)):
@@ -61,7 +61,7 @@ def estimate_Pose(img):
         cv2.circle(img, (int(corners[1][0][0][0]),int(corners[1][0][0][1])), 4, (255, 0, 0), -1)
 
     t_true = [0, 0, 530]
-    R_true = [[0, 0, 45]]
+    R_true = [[0.0, 45.0, 0.0]]
     send_XYZ(R_true, t_true, corners, ids)
     
     cv2.imshow('drawDetectedMarkers', img)
@@ -71,15 +71,19 @@ def estimate_Pose(img):
 
 def calc(x, y, R, t):
 
+    in_param = np.loadtxt("in_param.csv", delimiter=",")
     x0 = t[0]
     y0 = t[1]
     z0 = t[2]
     
+    x = x / in_param[0][0]
+    y = y / in_param[1][1]
+
     vec = [0, 0, 0]
     vec[0] = R[0][0] + R[0][1]*x + R[0][2]*y
     vec[1] = R[1][0] + R[1][1]*x + R[1][2]*y
     vec[2] = R[2][0] + R[2][1]*x + R[2][2]*y
-    #print("vec[2] = ", vec[2])
+    print("vec[2] = ", vec[2])
 
     if vec[2]<0:
         x = -vec[0] / vec[2] * z0 + x0
