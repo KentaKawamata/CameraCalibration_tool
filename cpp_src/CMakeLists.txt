@@ -6,9 +6,17 @@ function(Flag flag init_flag flag_message)
     endif()
 endfunction(Flag)
 
+Flag(USE_Boost true "Find and link Boost library")
+Flag(USE_CV true "Find and link OpenCV library")
+
 #project : プログラム全体の構成単位
 #基本的にプログラム全体を格納しているディレクトリの名前をプロジェクト名とする
-project(cpp_src C CXX)
+if(NOT PROJECT_NAME)
+    get_filename_component(DEFAULT_PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
+    set(PROJECT_NAME ${DEFAULT_PROJECT_NAME} CACHE STRING "Project name" FORCE)
+
+endif(NOT PROJECT_NAME)
+project(${PROJECT_NAME} C CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CXX_SOURCE_FILE_EXTS cpp;cxx)
@@ -16,10 +24,8 @@ set(CXX_INCLUDE_FILE_EXTS hpp;h)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
 
-add_executable(main main.cpp)
-
-Flag(USE_Boost true "Find and link Boost library")
-Flag(USE_CV true "Find and link OpenCV library")
+#ビルドの対象と実行ファイル名
+add_executable(calcAR calcAR.cpp)
 
 #Boostライブラリを探す
 if(USE_Boost)
