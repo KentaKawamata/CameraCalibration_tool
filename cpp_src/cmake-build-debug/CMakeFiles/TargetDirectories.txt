@@ -1,3 +1,0 @@
-/home/kawa/program/CameraCalibration_tool/cpp_src/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/kawa/program/CameraCalibration_tool/cpp_src/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/kawa/program/CameraCalibration_tool/cpp_src/cmake-build-debug/CMakeFiles/calcAR.dir
