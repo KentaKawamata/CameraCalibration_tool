@@ -1,0 +1,7 @@
+/opt/clion-2018.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/kawa/program/CameraCalibration_tool/cpp_src
+-- Boost version: 1.58.0
+---- Found Boost /usr/include
+---- Found OpenCV /usr/local/include;/usr/local/include/opencv
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/kawa/program/CameraCalibration_tool/cpp_src/cmake-build-debug

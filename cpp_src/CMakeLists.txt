@@ -25,7 +25,9 @@ set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
 
 #ビルドの対象と実行ファイル名
-add_executable(calcAR calcAR.cpp)
+add_executable(calcAR
+                    calcAR.h
+                    calcAR.cpp)
 
 #Boostライブラリを探す
 if(USE_Boost)

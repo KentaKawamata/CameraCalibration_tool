@@ -1,0 +1,1 @@
+clang++  -g   CMakeFiles/calcAR.dir/calcAR.cpp.o  -o calcAR 
