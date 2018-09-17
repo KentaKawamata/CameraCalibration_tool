@@ -8,14 +8,15 @@
 class Calculate{
 
     public:
-        Calculate();
-        ~Calculate();
+        //Calculate();
+        //~Calculate();
         void getCameraMatrix(std::string, cv::Mat &, int, int);
-        void calcPos(float , float , float , float);
-        void sendPoints(std::vector<cv::Vec3d> &, std::vector<cv::Vec3d> &,
+        void calcPos(float, float, cv::Mat &, std::vector<float> &,
+                std::vector<float> &);
+        void sendPoints(std::vector<float> &, std::vector<float> &,
                 std::vector<std::vector<cv::Point2f>> &, std::vector<int> &);
         void estimatePose(cv::Mat &);
-        void arReader(void);
+        void arReader();
 };
 
 #endif // CALCAR_H
