@@ -21,8 +21,8 @@ project(${PROJECT_NAME} C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CXX_SOURCE_FILE_EXTS cpp;cxx)
 set(CXX_INCLUDE_FILE_EXTS hpp;h)
-set(CMAKE_C_COMPILER gcc)
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
 
 #ビルドの対象と実行ファイル名
 add_executable(calcAR
