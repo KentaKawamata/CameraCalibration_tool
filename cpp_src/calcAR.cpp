@@ -6,6 +6,7 @@
 #include <opencv2/video.hpp>
 #include <opencv2/videoio.hpp>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <boost/tokenizer.hpp>
@@ -13,7 +14,6 @@
 #include "calcAR.h"
 
 void Calculate::getCameraMatrix(std::string filename, cv::Mat &param, int height, int width) {
-    std::vector<float> data;
     std::vector<std::vector<float>> src;
     cv::Mat dst(height, width, CV_64FC1, cv::Scalar(0));
     std::string line;
@@ -27,9 +27,11 @@ void Calculate::getCameraMatrix(std::string filename, cv::Mat &param, int height
 
     while(std::getline(ifs, line)){
        boost::tokenizer<boost::escaped_list_separator<char>> tokens(line);
+       std::vector<float> data;
 
        for(const std::string& token : tokens){
            num = std::stof(token);
+
            data.push_back(num);
        }
        src.push_back(data);
@@ -42,16 +44,16 @@ void Calculate::getCameraMatrix(std::string filename, cv::Mat &param, int height
 
     for(int row=0; row<height; row++){
         for(int col=0; col<width; col++){
-            dst.at<float>(row,col) = src[row][col];
+            param.at<float>(row,col) = src[row][col];
         }
     }
-    param = dst;
+    //param = dst;
 }
 
 void Calculate::calcPos(float x, float y,
         cv::Mat &R, std::vector<float> &t, std::vector<float> &r) {
 
-    cv::Mat in_param(3, 3, CV_64FC1, cv::Scalar(0));
+    cv::Mat in_param(cv::Mat_<float>(3,3));
     getCameraMatrix("./in_param.csv", in_param, 3, 3);
     float x0 = t[0];
     float y0 = t[1];
@@ -88,7 +90,7 @@ void Calculate::calcPos(float x, float y,
 void Calculate::sendPoints(std::vector<float> &rote, std::vector<float> &t,
         std::vector<std::vector<cv::Point2f>> &corners, std::vector<int> &ids) {
 
-    cv::Mat R(3, 3, CV_64FC1, cv::Scalar(0));
+    cv::Mat R(cv::Mat_<float>(3,3));
     cv::Rodrigues(rote, R);
 
     std::vector<float> x;
@@ -118,37 +120,46 @@ void Calculate::sendPoints(std::vector<float> &rote, std::vector<float> &t,
 }
 
 void Calculate::estimatePose(cv::Mat &src){
-    cv::Mat in_param(3, 3, CV_64FC1, cv::Scalar(0));
-    cv::Mat dist(1, 5, CV_64FC1, cv::Scalar(0));
+    //cv::Mat in_param(3, 3, CV_64F, cv::Scalar(0));
+    cv::Mat in_param(cv::Mat_<float>(3,3));
+    //cv::Mat dist(1, CV_64F, 5, cv::Scalar(0));
+    cv::Mat dist(cv::Mat_<float>(1,5));
     getCameraMatrix("./in_param.csv", in_param, 3, 3);
     getCameraMatrix("./dist.csv", dist, 1, 5);
+
+    std::cout << in_param << std::endl << std::endl;
     cv::Mat img;
 
     cv::undistort(src, img, in_param, dist);
-
-    const cv::aruco::PREDEFINED_DICTIONARY_NAME dictionary_name = cv::aruco::DICT_4X4_50;
-    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(dictionary_name);
+    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 
     std::vector<int> marker_ids;
     std::vector<std::vector<cv::Point2f>> marker_corners;
     cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
     cv::aruco::detectMarkers(img, dictionary, marker_corners, marker_ids, parameters);
+    cv::aruco::drawDetectedMarkers(img, marker_corners, marker_ids, cv::Scalar(0, 255, 0));
 
-    std::vector<cv::Vec3f> R;
-    std::vector<cv::Vec3f> t;
-    cv::aruco::estimatePoseSingleMarkers(marker_corners, 150, in_param, dist, R, t);
+    std::vector<cv::Vec3d> R;
+    std::vector<cv::Vec3d> t;
+    cv::aruco::estimatePoseSingleMarkers(marker_corners, 50, in_param, dist, R, t);
 
     for(int i=0; i<marker_ids.size(); i++){
-        cv::aruco::drawAxis(img, in_param, dist, R[i], t[i], 150.0);
+        cv::aruco::drawAxis(img, in_param, dist, R[i], t[i], 50.0);
     }
 
     std::vector<float> R_true = {0, 45.0, 0};
     std::vector<float> t_true = {0, 0, 530};
     sendPoints(R_true, t_true, marker_corners, marker_ids);
+
+    cv::imshow("drawDetectedMarkers", img);
+    if(cv::waitKey(0)==27){
+      cv::imwrite("AR.png", img);
+      cv::destroyAllWindows();
+    }
 }
 
 void Calculate::arReader(){
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap("/dev/video0");
 
     if(!cap.isOpened()){
         std::cout << "Could not find Camera" << std::endl;
@@ -159,7 +170,7 @@ void Calculate::arReader(){
         cv::Mat frame;
         cv::Mat img;
 
-        cap.read(frame);
+        cap >> frame;
         cv::resize(frame, img, cv::Size(640, 480));
         cv::imshow("drawDetectMarkers", img);
 
