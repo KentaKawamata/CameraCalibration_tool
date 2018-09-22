@@ -7,7 +7,7 @@ import os
 class Capture():
 
   def __init__(self):
-      self.img_dir = "/home/kawa/program/CameraCalibration_tool/images/"
+      self.img_dir = "/home/kawa/program/robocup/images/"
 
   def manual_focus(self):
 
